@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/invoice.html" }
+  ],
+  "cleanUrls": true
+}

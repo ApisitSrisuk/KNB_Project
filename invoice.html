@@ -1,304 +1,453 @@
 <!DOCTYPE html>
 <html lang="th">
-<head>
-  <meta charset="UTF-8" />
-  <title>ใบกำกับภาษี</title>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ใบกำกับภาษี</title>
 
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@200;300;400;600;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@200;300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
 
-  <!-- html2pdf -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <!-- html2pdf -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    <style>
+      @page {
+        size: A4;
+        margin: 10mm;
+      }
 
-  <style>
-    @page { size: A4; margin: 10mm; }
+      body {
+        font-family: "Sarabun", Arial, sans-serif;
+        background: #f0f2f5;
+        padding: 16px;
+        -webkit-print-color-adjust: exact;
+      }
 
-    body {
-      font-family: 'Sarabun', Arial, sans-serif;
-      background: #f0f2f5;
-      padding: 16px;
-      -webkit-print-color-adjust: exact;
-    }
+      .invoice-box {
+        background: #fff;
+        /* width: 190mm; */
+        /* max-width: 100%; */
+        margin: 0 auto;
+        padding: 16mm;
+        /* border-radius: 6px; */
+        /* border: 1px solid #e1e4e8; */
+        /* box-shadow: 0 2px 8px rgba(0,0,0,0.06); */
+        /* box-sizing: border-box; */
+        color: #222;
+        font-size: 14px;
+      }
 
-    .invoice-box {
-      background: #fff;
-      /* width: 190mm; */
-      /* max-width: 100%; */
-      margin: 0 auto;
-      padding: 16mm;
-      /* border-radius: 6px; */
-      /* border: 1px solid #e1e4e8; */
-      /* box-shadow: 0 2px 8px rgba(0,0,0,0.06); */
-      /* box-sizing: border-box; */
-      color: #222;
-      font-size: 14px;
-    }
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
+      .company-info {
+        line-height: 1.6;
+      }
 
-    .company-info {
-      line-height: 1.6;
-    }
+      .company-info h2 {
+        margin: 0;
+      }
 
-    .company-info h2 {
-      margin: 0;
-    }
+      .logo img {
+        max-width: 120px;
+      }
 
-    .logo img {
-      max-width: 120px;
-    }
+      .title {
+        text-align: center;
+        font-size: 20px;
+        margin: 14px 0;
+        font-weight: 700;
+        color: #0b3b66;
+      }
 
-    .title {
-      text-align: center;
-      font-size: 20px;
-      margin: 14px 0;
-      font-weight: 700;
-      color: #0b3b66;
-    }
+      .info {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+      }
 
-    .info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 13px;
+      }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 13px;
-    }
+      table,
+      th,
+      td {
+        border: 1px solid #d7dbe0;
+      }
 
-    table, th, td {
-      border: 1px solid #d7dbe0;
-    }
+      th {
+        background: #f6f8fa;
+        color: #233444;
+        padding: 10px;
+        font-weight: 600;
+        text-align: center;
+      }
 
-    th {
-      background: #f6f8fa;
-      color: #233444;
-      padding: 10px;
-      font-weight: 600;
-      text-align: center;
-    }
+      td {
+        padding: 10px;
+        vertical-align: middle;
+      }
 
-    td {
-      padding: 10px;
-      vertical-align: middle;
-    }
+      td.text-right {
+        text-align: right;
+      }
+      td.text-left {
+        text-align: left;
+      }
+      tr:nth-child(even) td {
+        background: #fff;
+      }
 
-    td.text-right { text-align: right; }
-    td.text-left { text-align: left; }
-    tr:nth-child(even) td { background: #fff; }
+      .summary {
+        margin-top: 18px;
+        width: 40%;
+        float: right;
+        border: none;
+      }
 
-    .summary {
-      margin-top: 18px;
-      width: 40%;
-      float: right;
-      border: none;
-    }
+      .summary td {
+        text-align: right;
+        padding: 8px 10px;
+        border: none;
+      }
 
-    .summary td { text-align: right; padding:8px 10px; border:none; }
+      .summary tr td:first-child {
+        color: #333;
+      }
 
-    .summary tr td:first-child { color:#333 }
+      .info,
+      .header .company-info {
+        font-size: 13px;
+        color: #333;
+      }
 
-    .info, .header .company-info { font-size: 13px; color: #333 }
+      .footer {
+        clear: both;
+        margin-top: 40px;
+        display: flex;
+        justify-content: space-between;
+        text-align: center;
+      }
 
-    .footer {
-      clear: both;
-      margin-top: 40px;
-      display: flex;
-      justify-content: space-between;
-      text-align: center;
-    }
+      .signature {
+        width: 45%;
+        color: #444;
+      }
 
-    .signature {
-      width: 45%;
-      color: #444;
-    }
+      .signature .line {
+        display: block;
+        margin-top: 28px;
+        border-top: 1px solid #bbb;
+        padding-top: 6px;
+      }
 
-    .signature .line { display:block; margin-top:28px; border-top:1px solid #bbb; padding-top:6px; }
+      .btn {
+        margin: 8px 6px;
+        display: inline-block;
+        padding: 8px 14px;
+        font-size: 14px;
+        cursor: pointer;
+        border-radius: 6px;
+        border: 1px solid #1976d2;
+        background: #1e88e5;
+        color: #fff;
+        box-shadow: 0 2px 6px rgba(30, 136, 229, 0.18);
+      }
 
-    .btn {
-      margin: 8px 6px;
-      display: inline-block;
-      padding: 8px 14px;
-      font-size: 14px;
-      cursor: pointer;
-      border-radius: 6px;
-      border: 1px solid #1976d2;
-      background: #1e88e5;
-      color: #fff;
-      box-shadow: 0 2px 6px rgba(30,136,229,0.18);
-    }
+      .btn.secondary {
+        background: #fff;
+        color: #1976d2;
+        border: 1px solid #cfe6ff;
+      }
 
-    .btn.secondary { background:#fff; color:#1976d2; border:1px solid #cfe6ff }
+      .no-print {
+      }
 
-    .no-print { }
+      /* Editable field styling */
+      .editable,
+      input[type="text"],
+      input[type="number"],
+      textarea {
+        padding: 8px 10px;
+        border: 1px solid #e6edf3;
+        border-radius: 6px;
+        background: #fbfdff;
+        font-size: 13px;
+        color: #112233;
+        box-shadow: inset 0 1px 2px rgba(16, 24, 40, 0.03);
+        transition: box-shadow 0.12s ease, border-color 0.12s ease,
+          background 0.12s;
+      }
 
-    /* Editable field styling */
-    .editable, input[type="text"], input[type="number"], textarea{
-      padding:8px 10px;
-      border:1px solid #e6edf3;
-      border-radius:6px;
-      background:#fbfdff;
-      font-size:13px;
-      color:#112233;
-      box-shadow: inset 0 1px 2px rgba(16,24,40,0.03);
-      transition: box-shadow .12s ease, border-color .12s ease, background .12s;
-    }
+      .editable:focus,
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #7aa7ff;
+        box-shadow: 0 0 0 4px rgba(30, 136, 229, 0.08);
+        background: #fff;
+      }
 
-    .editable:focus, input[type="text"]:focus, input[type="number"]:focus, textarea:focus{
-      outline: none;
-      border-color: #7aa7ff;
-      box-shadow: 0 0 0 4px rgba(30,136,229,0.08);
-      background: #fff;
-    }
+      input.item-qty,
+      input.item-price {
+        width: 90px;
+        text-align: right;
+      }
+      input.item-desc {
+        width: 100%;
+        box-sizing: border-box;
+      }
+      ::placeholder {
+        color: #9aa6b2;
+      }
 
-    input.item-qty, input.item-price { width:90px; text-align:right }
-    input.item-desc { width:100%; box-sizing: border-box }
-    ::placeholder { color:#9aa6b2 }
+      /* Radio/label spacing */
+      label {
+        margin-right: 12px;
+      }
+      #paymentContainer div {
+        display: inline-block;
+      }
 
-    /* Radio/label spacing */
-    label { margin-right:12px }
-    #paymentContainer div { display:inline-block }
+      /* Slight emphasis for key fields */
+      #customerName,
+      #docNumber {
+        font-weight: 600;
+      }
 
-    /* Slight emphasis for key fields */
-    #customerName, #docNumber { font-weight:600 }
+      @media print {
+        body {
+          background: #fff;
+          padding: 0;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .invoice-box {
+          box-shadow: none;
+          border: none;
+          margin: 0;
+          width: 100%;
+          padding: 10mm;
+        }
+        table,
+        th,
+        td {
+          border: none !important;
+        }
+        .row-remove-btn {
+          display: none !important;
+        }
+        input,
+        textarea,
+        select {
+          border: none !important;
+          box-shadow: none !important;
+          background: transparent !important;
+        }
+      }
 
-    @media print {
-      body { background: #fff; padding:0 }
-      .no-print { display:none !important }
-      .invoice-box { box-shadow:none; border:none; margin:0; width:100%; padding:10mm }
-      table, th, td { border: none !important }
-      .row-remove-btn { display: none !important }
-      input, textarea, select { border: none !important; box-shadow: none !important; background: transparent !important }
-    }
-
-    /* styles applied while exporting to remove interactive chrome */
-    .invoice-box.exporting table, .invoice-box.exporting th, .invoice-box.exporting td { border: none !important }
-    .invoice-box.exporting input, .invoice-box.exporting textarea, .invoice-box.exporting select { border: none !important; box-shadow: none !important; background: transparent !important }
-    .invoice-box.exporting .row-remove-btn { display:none !important }
-  </style>
-</head>
-<body>
-
-<div style="text-align:center; margin-bottom:10px;">
-  <button class="btn no-print" onclick="exportPDFs()">Export PDFs (ต้นฉบับ + สำเนา)</button>
-  <button class="btn secondary no-print" onclick="addItem()">เพิ่มรายการ</button>
-</div>
-
-<div id="invoice" class="invoice-box">
-
-  <!-- Header -->
-  <div class="header">
-    <div class="company-info">
-      <h2>ร้าน เคเอ็นบี มอเตอร์</h2>
-      ที่อยู่: 2/97-98 ม.1 ต.บางริ้น <br>
-      อ.เมืองระนอง จ.ระนอง 85000<br>
-      โทร: 02-123-4567
+      /* styles applied while exporting to remove interactive chrome */
+      .invoice-box.exporting table,
+      .invoice-box.exporting th,
+      .invoice-box.exporting td {
+        border: none !important;
+      }
+      .invoice-box.exporting input,
+      .invoice-box.exporting textarea,
+      .invoice-box.exporting select {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+      .invoice-box.exporting .row-remove-btn {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="text-align: center; margin-bottom: 10px">
+      <button class="btn no-print" onclick="exportPDFs()">
+        Export PDFs (ต้นฉบับ + สำเนา)
+      </button>
+      <button class="btn secondary no-print" onclick="addItem()">
+        เพิ่มรายการ
+      </button>
     </div>
 
-    <div class="logo">
-      <img src="logo.png" alt="Company Logo">
+    <div id="invoice" class="invoice-box">
+      <!-- Header -->
+      <div class="header">
+        <div class="company-info">
+          <h2>ร้าน เคเอ็นบี มอเตอร์</h2>
+          ที่อยู่: 2/97-98 ม.1 ต.บางริ้น <br />
+          อ.เมืองระนอง จ.ระนอง 85000<br />
+          โทร: 02-123-4567
+        </div>
+
+        <div class="logo">
+          <img src="logo.png" alt="Company Logo" />
+        </div>
+      </div>
+
+      <div class="title">
+        ใบกำกับภาษี
+        <div
+          id="docTypeLabel"
+          style="font-size: 14px; margin-top: 6px; color: #555"
+        ></div>
+      </div>
+
+      <!-- Customer Info -->
+      <div class="info">
+        <div>
+          <strong>ชื่อลูกค้า:</strong>
+          <input
+            type="text"
+            id="customerName"
+            class="editable"
+            value="บริษัท ตัวอย่าง จำกัด"
+          /><br />
+          <strong>ที่อยู่:</strong>
+          <input
+            type="text"
+            id="customerAddress"
+            class="editable"
+            value="99 ถนนพระราม 9 กรุงเทพฯ"
+          /><br />
+          <strong>เลขผู้เสียภาษี:</strong>
+          <input
+            type="text"
+            id="customerTaxId"
+            class="editable"
+            value="0105559876543"
+          />
+        </div>
+        <div>
+          <strong>เลขที่เอกสาร:</strong>
+          <input
+            type="text"
+            id="docNumber"
+            class="editable"
+            value="INV-2026-001"
+          /><br />
+          <strong>วันที่:</strong>
+          <input type="text" id="docDate" class="editable" value="12/01/2026" />
+        </div>
+      </div>
+
+      <!-- Item Table -->
+      <table>
+        <thead>
+          <tr>
+            <th>ลำดับ</th>
+            <th>รายการ</th>
+            <th>จำนวน</th>
+            <th>ราคา/หน่วย</th>
+            <th>จำนวนเงิน</th>
+            <th>จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="items">
+          <!-- rows inserted dynamically -->
+        </tbody>
+      </table>
+
+      <!-- Summary -->
+      <table class="summary">
+        <tr>
+          <td>รวมเป็นเงิน</td>
+          <td id="subTotal">0.00</td>
+        </tr>
+        <tr>
+          <td>ภาษีมูลค่าเพิ่ม 7%</td>
+          <td id="vatAmount">0.00</td>
+        </tr>
+        <tr>
+          <td><strong>ยอดสุทธิ</strong></td>
+          <td id="grandTotal"><strong>0.00</strong></td>
+        </tr>
+      </table>
+
+      <!-- Payment Method -->
+      <div id="paymentContainer" style="clear: both; margin-top: 20px">
+        <strong>วิธีการชำระเงิน:</strong><br />
+        <label
+          ><input
+            type="radio"
+            name="paymentMethod"
+            value="cash"
+            checked
+            onchange="setPaymentMethod()"
+          />
+          เงินสด</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="paymentMethod"
+            value="cheque"
+            onchange="setPaymentMethod()"
+          />
+          เช็ค</label
+        >
+        <label
+          ><input
+            type="radio"
+            name="paymentMethod"
+            value="transfer"
+            onchange="setPaymentMethod()"
+          />
+          โอนบัญชีธนาคาร</label
+        >
+
+        <div id="chequeFields" style="display: none; margin-top: 10px">
+          หมายเลขเช็ค: <input type="text" id="chequeNumber" /> &nbsp; ธนาคาร:
+          <input type="text" id="chequeBank" />
+        </div>
+
+        <div id="transferFields" style="display: none; margin-top: 10px">
+          ธนาคาร: <input type="text" id="transferBank" /> &nbsp; เลขที่บัญชี:
+          <input type="text" id="transferAccount" />
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <div class="signature">
+          ___________________________<br />
+          ผู้รับสินค้า
+        </div>
+        <div class="signature">
+          ___________________________<br />
+          ผู้มีอำนาจลงนาม
+        </div>
+      </div>
     </div>
-  </div>
 
-  <div class="title">
-    ใบกำกับภาษี
-    <div id="docTypeLabel" style="font-size:14px; margin-top:6px; color:#555"></div>
-  </div>
+    <script>
+      function formatNumber(num) {
+        return Number(num).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+      }
 
-  <!-- Customer Info -->
-  <div class="info">
-    <div>
-      <strong>ชื่อลูกค้า:</strong> <input type="text" id="customerName" class="editable" value="บริษัท ตัวอย่าง จำกัด"><br>
-      <strong>ที่อยู่:</strong> <input type="text" id="customerAddress" class="editable" value="99 ถนนพระราม 9 กรุงเทพฯ"><br>
-      <strong>เลขผู้เสียภาษี:</strong> <input type="text" id="customerTaxId" class="editable" value="0105559876543">
-    </div>
-    <div>
-      <strong>เลขที่เอกสาร:</strong> <input type="text" id="docNumber" class="editable" value="INV-2026-001"><br>
-      <strong>วันที่:</strong> <input type="text" id="docDate" class="editable" value="12/01/2026">
-    </div>
-  </div>
-
-  <!-- Item Table -->
-  <table>
-    <thead>
-      <tr>
-        <th>ลำดับ</th>
-        <th>รายการ</th>
-        <th>จำนวน</th>
-        <th>ราคา/หน่วย</th>
-        <th>จำนวนเงิน</th>
-        <th>จัดการ</th>
-      </tr>
-    </thead>
-    <tbody id="items">
-      <!-- rows inserted dynamically -->
-    </tbody>
-  </table>
-
-  <!-- Summary -->
-  <table class="summary">
-    <tr>
-      <td>รวมเป็นเงิน</td>
-      <td id="subTotal">0.00</td>
-    </tr>
-    <tr>
-      <td>ภาษีมูลค่าเพิ่ม 7%</td>
-      <td id="vatAmount">0.00</td>
-    </tr>
-    <tr>
-      <td><strong>ยอดสุทธิ</strong></td>
-      <td id="grandTotal"><strong>0.00</strong></td>
-    </tr>
-  </table>
-
-  <!-- Payment Method -->
-  <div id="paymentContainer" style="clear:both; margin-top:20px;">
-    <strong>วิธีการชำระเงิน:</strong><br>
-    <label><input type="radio" name="paymentMethod" value="cash" checked onchange="setPaymentMethod()"> เงินสด</label>
-    <label><input type="radio" name="paymentMethod" value="cheque" onchange="setPaymentMethod()"> เช็ค</label>
-    <label><input type="radio" name="paymentMethod" value="transfer" onchange="setPaymentMethod()"> โอนบัญชีธนาคาร</label>
-
-    <div id="chequeFields" style="display:none; margin-top:10px;">
-      หมายเลขเช็ค: <input type="text" id="chequeNumber"> &nbsp;
-      ธนาคาร: <input type="text" id="chequeBank">
-    </div>
-
-    <div id="transferFields" style="display:none; margin-top:10px;">
-      ธนาคาร: <input type="text" id="transferBank"> &nbsp;
-      เลขที่บัญชี: <input type="text" id="transferAccount">
-    </div>
-  </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <div class="signature">
-      ___________________________<br>
-      ผู้รับสินค้า
-    </div>
-    <div class="signature">
-      ___________________________<br>
-      ผู้มีอำนาจลงนาม
-    </div>
-  </div>
-
-</div>
-
-<script>
-  function formatNumber(num){
-    return Number(num).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-  }
-
-  function addItem(desc = '', qty = 1, price = 0){
-    const tbody = document.getElementById('items');
-    const row = document.createElement('tr');
-    row.innerHTML = `
+      function addItem(desc = "", qty = 1, price = 0) {
+        const tbody = document.getElementById("items");
+        const row = document.createElement("tr");
+        row.innerHTML = `
       <td class="item-index"></td>
       <td><input class="item-desc" type="text" value="${desc}"></td>
       <td><input class="item-qty" type="number" min="0" value="${qty}"></td>
@@ -306,222 +455,273 @@
       <td class="item-amount">0.00</td>
       <td><button class="no-print row-remove-btn" onclick="removeItem(this)">ลบ</button></td>
     `;
-    tbody.appendChild(row);
-    attachRowEvents(row);
-    updateIndices();
-    updateTotals();
-  }
-
-  function attachRowEvents(row){
-    const qty = row.querySelector('.item-qty');
-    const price = row.querySelector('.item-price');
-    const desc = row.querySelector('.item-desc');
-    [qty, price, desc].forEach(el => el.addEventListener('input', updateTotals));
-  }
-
-  function removeItem(btn){
-    const row = btn.closest('tr');
-    row.remove();
-    updateIndices();
-    updateTotals();
-  }
-
-  function updateIndices(){
-    document.querySelectorAll('#items tr').forEach((r,i)=>{
-      const idx = r.querySelector('.item-index');
-      if(idx) idx.textContent = i+1;
-    });
-  }
-
-  function updateTotals(){
-    let subtotal = 0;
-    document.querySelectorAll('#items tr').forEach(r=>{
-      const q = parseFloat(r.querySelector('.item-qty').value) || 0;
-      const p = parseFloat(r.querySelector('.item-price').value) || 0;
-      const amt = q * p;
-      r.querySelector('.item-amount').textContent = formatNumber(amt);
-      subtotal += amt;
-    });
-    const vat = subtotal * 0.07;
-    const total = subtotal + vat;
-    document.getElementById('subTotal').textContent = formatNumber(subtotal);
-    document.getElementById('vatAmount').textContent = formatNumber(vat);
-    document.getElementById('grandTotal').textContent = formatNumber(total);
-  }
-
-  function setPaymentMethod(){
-    const method = document.querySelector('input[name=paymentMethod]:checked').value;
-    document.getElementById('chequeFields').style.display = method === 'cheque' ? 'block' : 'none';
-    document.getElementById('transferFields').style.display = method === 'transfer' ? 'block' : 'none';
-  }
-
-  // Prepare export: replace interactive inputs/radios with plain text for accurate PDF rendering
-  let __exportBackups = [];
-  function prepareForExport(){
-    __exportBackups = [];
-    const invoice = document.getElementById('invoice');
-
-    // Backup and replace payment container with summary text
-    const paymentContainer = document.getElementById('paymentContainer');
-    if(paymentContainer){
-      __exportBackups.push({node: paymentContainer, html: paymentContainer.innerHTML});
-      const method = document.querySelector('input[name=paymentMethod]:checked');
-      let text = '';
-      if(method){
-        if(method.value === 'cash') text = 'เงินสด';
-        else if(method.value === 'cheque') text = 'เช็ค';
-        else if(method.value === 'transfer') text = 'โอนบัญชีธนาคาร';
+        tbody.appendChild(row);
+        attachRowEvents(row);
+        updateIndices();
+        updateTotals();
       }
-      if(method && method.value === 'cheque'){
-        const num = document.getElementById('chequeNumber').value || '';
-        const bank = document.getElementById('chequeBank').value || '';
-        if(num || bank) text += ' — ' + num + (bank ? (' / '+bank) : '');
+
+      function attachRowEvents(row) {
+        const qty = row.querySelector(".item-qty");
+        const price = row.querySelector(".item-price");
+        const desc = row.querySelector(".item-desc");
+        [qty, price, desc].forEach((el) =>
+          el.addEventListener("input", updateTotals)
+        );
       }
-      if(method && method.value === 'transfer'){
-        const bank = document.getElementById('transferBank').value || '';
-        const acc = document.getElementById('transferAccount').value || '';
-        if(bank || acc) text += ' — ' + bank + (acc ? (' / '+acc) : '');
+
+      function removeItem(btn) {
+        const row = btn.closest("tr");
+        row.remove();
+        updateIndices();
+        updateTotals();
       }
-      paymentContainer.innerHTML = '<div style="margin-top:6px;">' + text + '</div>';
-    }
 
-    // Replace all inputs (except buttons/no-print) with text nodes
-    const inputs = invoice.querySelectorAll('input, textarea, select');
-    inputs.forEach((inp, idx) => {
-      // skip if inside paymentContainer (already handled)
-      if(paymentContainer && paymentContainer.contains(inp)) return;
-      if(inp.classList && inp.classList.contains('no-print')) return;
-      // create span
-      const span = document.createElement('span');
-      let value = '';
-      if(inp.type === 'checkbox' || inp.type === 'radio'){
-        if(inp.checked){
-          // try to get label text
-          const lbl = invoice.querySelector('label[for="'+inp.id+'"]');
-          value = inp.value || (lbl ? lbl.textContent : 'เลือก');
-        } else return; // unchecked radios/checkboxes omitted
-      } else {
-        value = inp.value || '';
-      }
-      span.textContent = value;
-      span.className = 'exported-text';
-      const id = 'exp' + (__exportBackups.length + 1);
-      span.dataset.exportId = id;
-      // store current value and span reference so we can restore with the current value
-      __exportBackups.push({node: inp, exportId: id, html: inp.outerHTML, parent: inp.parentNode, next: inp.nextSibling, value: inp.value, span: span});
-      inp.parentNode.replaceChild(span, inp);
-    });
-
-    // Replace item row inputs as well (they are captured above)
-  }
-
-  function restoreAfterExport(){
-    // restore in reverse order
-    for(let i = __exportBackups.length -1; i>=0; i--){
-      const b = __exportBackups[i];
-      if(b.exportId){
-        const parent = b.parent;
-        // recreate original input from stored outerHTML
-        const frag = document.createRange().createContextualFragment(b.html);
-        if(b.next) parent.insertBefore(frag, b.next);
-        else parent.appendChild(frag);
-        // set the restored input's current value (preserve user edits)
-        try{
-          // find the first input/select/textarea in the inserted fragment or the inserted node itself
-          const restored = (b.next ? parent.previousSibling : parent.lastElementChild);
-          if(restored){
-            let newInput = null;
-            if(restored.nodeType === 1){
-              const tag = restored.tagName && restored.tagName.toLowerCase();
-              if(tag === 'input' || tag === 'textarea' || tag === 'select') newInput = restored;
-              else if(restored.querySelector) newInput = restored.querySelector('input, textarea, select');
-            }
-            if(newInput && b.value !== undefined) newInput.value = b.value;
-          }
-        }catch(e){}
-        // remove the replacement span if still present
-        const s = parent.querySelector('[data-export-id="'+b.exportId+'"]');
-        if(s) s.remove();
-      } else if(b.node){
-        // paymentContainer backup
-        b.node.innerHTML = b.html;
-      }
-    }
-    // reattach events and recalc after restoring inputs
-    document.querySelectorAll('#items tr').forEach(r => attachRowEvents(r));
-    updateIndices();
-    updateTotals();
-    try{ setPaymentMethod(); }catch(e){}
-    __exportBackups = [];
-  }
-
-  function validateBeforeExport(){
-    const method = document.querySelector('input[name=paymentMethod]:checked').value;
-    if(method === 'cheque'){
-      const num = document.getElementById('chequeNumber').value.trim();
-      const bank = document.getElementById('chequeBank').value.trim();
-      if(!num || !bank){ alert('กรุณากรอกหมายเลขเช็คและชื่อธนาคาร'); return false; }
-    }
-    if(method === 'transfer'){
-      const bank = document.getElementById('transferBank').value.trim();
-      const acc = document.getElementById('transferAccount').value.trim();
-      if(!bank || !acc){ alert('กรุณากรอกข้อมูลธนาคารและเลขที่บัญชีสำหรับการโอน'); return false; }
-    }
-    // at least one item
-    if(document.querySelectorAll('#items tr').length === 0){ if(!confirm('ไม่มีรายการสินค้า: ต้องการส่งออกหรือไม่?')) return false; }
-    return true;
-  }
-
-  function exportPDFWithLabel(label, filename){
-    return new Promise((resolve)=>{
-      const element = document.getElementById('invoice');
-      document.getElementById('docTypeLabel').textContent = label;
-      // prepare: convert interactive controls to text for PDF
-      prepareForExport();
-      element.classList.add('exporting');
-      // small timeout to allow DOM updates
-      setTimeout(()=>{
-        html2pdf().from(element).set({
-          margin: 10,
-          filename: filename,
-          html2canvas: { scale: 2 },
-          jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        }).save().then(()=>{
-          element.classList.remove('exporting');
-          // restore original interactive controls
-          restoreAfterExport();
-          resolve();
-        }).catch((err)=>{
-          element.classList.remove('exporting');
-          restoreAfterExport();
-          resolve();
+      function updateIndices() {
+        document.querySelectorAll("#items tr").forEach((r, i) => {
+          const idx = r.querySelector(".item-index");
+          if (idx) idx.textContent = i + 1;
         });
-      }, 250);
-    });
-  }
+      }
 
-  async function exportPDFs(){
-    updateTotals();
-    if(!validateBeforeExport()) return;
-    const orig = 'invoice_original.pdf';
-    const copy = 'invoice_copy.pdf';
-    try{
-      await exportPDFWithLabel('ต้นฉบับ', orig);
-      await exportPDFWithLabel('สำเนา', copy);
-    }catch(e){
-      alert('เกิดข้อผิดพลาดขณะส่งออก: ' + e);
-    }finally{
-      document.getElementById('docTypeLabel').textContent = '';
-    }
-  }
+      function updateTotals() {
+        let subtotal = 0;
+        document.querySelectorAll("#items tr").forEach((r) => {
+          const q = parseFloat(r.querySelector(".item-qty").value) || 0;
+          const p = parseFloat(r.querySelector(".item-price").value) || 0;
+          const amt = q * p;
+          r.querySelector(".item-amount").textContent = formatNumber(amt);
+          subtotal += amt;
+        });
+        const vat = subtotal * 0.07;
+        const total = subtotal + vat;
+        document.getElementById("subTotal").textContent =
+          formatNumber(subtotal);
+        document.getElementById("vatAmount").textContent = formatNumber(vat);
+        document.getElementById("grandTotal").textContent = formatNumber(total);
+      }
 
-  // initialize sample items and payment method
-  (function init(){
-    addItem('อุปกรณ์ตัวอย่าง A',2,1000);
-    addItem('อุปกรณ์ตัวอย่าง B',1,3000);
-    setPaymentMethod();
-  })();
-</script>
+      function setPaymentMethod() {
+        const method = document.querySelector(
+          "input[name=paymentMethod]:checked"
+        ).value;
+        document.getElementById("chequeFields").style.display =
+          method === "cheque" ? "block" : "none";
+        document.getElementById("transferFields").style.display =
+          method === "transfer" ? "block" : "none";
+      }
 
-</body>
+      // Prepare export: replace interactive inputs/radios with plain text for accurate PDF rendering
+      let __exportBackups = [];
+      function prepareForExport() {
+        __exportBackups = [];
+        const invoice = document.getElementById("invoice");
+
+        // Backup and replace payment container with summary text
+        const paymentContainer = document.getElementById("paymentContainer");
+        if (paymentContainer) {
+          __exportBackups.push({
+            node: paymentContainer,
+            html: paymentContainer.innerHTML,
+          });
+          const method = document.querySelector(
+            "input[name=paymentMethod]:checked"
+          );
+          let text = "";
+          if (method) {
+            if (method.value === "cash") text = "เงินสด";
+            else if (method.value === "cheque") text = "เช็ค";
+            else if (method.value === "transfer") text = "โอนบัญชีธนาคาร";
+          }
+          if (method && method.value === "cheque") {
+            const num = document.getElementById("chequeNumber").value || "";
+            const bank = document.getElementById("chequeBank").value || "";
+            if (num || bank) text += " — " + num + (bank ? " / " + bank : "");
+          }
+          if (method && method.value === "transfer") {
+            const bank = document.getElementById("transferBank").value || "";
+            const acc = document.getElementById("transferAccount").value || "";
+            if (bank || acc) text += " — " + bank + (acc ? " / " + acc : "");
+          }
+          paymentContainer.innerHTML =
+            '<div style="margin-top:6px;">' + text + "</div>";
+        }
+
+        // Replace all inputs (except buttons/no-print) with text nodes
+        const inputs = invoice.querySelectorAll("input, textarea, select");
+        inputs.forEach((inp, idx) => {
+          // skip if inside paymentContainer (already handled)
+          if (paymentContainer && paymentContainer.contains(inp)) return;
+          if (inp.classList && inp.classList.contains("no-print")) return;
+          // create span
+          const span = document.createElement("span");
+          let value = "";
+          if (inp.type === "checkbox" || inp.type === "radio") {
+            if (inp.checked) {
+              // try to get label text
+              const lbl = invoice.querySelector('label[for="' + inp.id + '"]');
+              value = inp.value || (lbl ? lbl.textContent : "เลือก");
+            } else return; // unchecked radios/checkboxes omitted
+          } else {
+            value = inp.value || "";
+          }
+          span.textContent = value;
+          span.className = "exported-text";
+          const id = "exp" + (__exportBackups.length + 1);
+          span.dataset.exportId = id;
+          // store current value and span reference so we can restore with the current value
+          __exportBackups.push({
+            node: inp,
+            exportId: id,
+            html: inp.outerHTML,
+            parent: inp.parentNode,
+            next: inp.nextSibling,
+            value: inp.value,
+            span: span,
+          });
+          inp.parentNode.replaceChild(span, inp);
+        });
+
+        // Replace item row inputs as well (they are captured above)
+      }
+
+      function restoreAfterExport() {
+        // restore in reverse order
+        for (let i = __exportBackups.length - 1; i >= 0; i--) {
+          const b = __exportBackups[i];
+          if (b.exportId) {
+            const parent = b.parent;
+            // recreate original input from stored outerHTML
+            const frag = document
+              .createRange()
+              .createContextualFragment(b.html);
+            if (b.next) parent.insertBefore(frag, b.next);
+            else parent.appendChild(frag);
+            // set the restored input's current value (preserve user edits)
+            try {
+              // find the first input/select/textarea in the inserted fragment or the inserted node itself
+              const restored = b.next
+                ? parent.previousSibling
+                : parent.lastElementChild;
+              if (restored) {
+                let newInput = null;
+                if (restored.nodeType === 1) {
+                  const tag =
+                    restored.tagName && restored.tagName.toLowerCase();
+                  if (tag === "input" || tag === "textarea" || tag === "select")
+                    newInput = restored;
+                  else if (restored.querySelector)
+                    newInput = restored.querySelector(
+                      "input, textarea, select"
+                    );
+                }
+                if (newInput && b.value !== undefined) newInput.value = b.value;
+              }
+            } catch (e) {}
+            // remove the replacement span if still present
+            const s = parent.querySelector(
+              '[data-export-id="' + b.exportId + '"]'
+            );
+            if (s) s.remove();
+          } else if (b.node) {
+            // paymentContainer backup
+            b.node.innerHTML = b.html;
+          }
+        }
+        // reattach events and recalc after restoring inputs
+        document
+          .querySelectorAll("#items tr")
+          .forEach((r) => attachRowEvents(r));
+        updateIndices();
+        updateTotals();
+        try {
+          setPaymentMethod();
+        } catch (e) {}
+        __exportBackups = [];
+      }
+
+      function validateBeforeExport() {
+        const method = document.querySelector(
+          "input[name=paymentMethod]:checked"
+        ).value;
+        if (method === "cheque") {
+          const num = document.getElementById("chequeNumber").value.trim();
+          const bank = document.getElementById("chequeBank").value.trim();
+          if (!num || !bank) {
+            alert("กรุณากรอกหมายเลขเช็คและชื่อธนาคาร");
+            return false;
+          }
+        }
+        if (method === "transfer") {
+          const bank = document.getElementById("transferBank").value.trim();
+          const acc = document.getElementById("transferAccount").value.trim();
+          if (!bank || !acc) {
+            alert("กรุณากรอกข้อมูลธนาคารและเลขที่บัญชีสำหรับการโอน");
+            return false;
+          }
+        }
+        // at least one item
+        if (document.querySelectorAll("#items tr").length === 0) {
+          if (!confirm("ไม่มีรายการสินค้า: ต้องการส่งออกหรือไม่?"))
+            return false;
+        }
+        return true;
+      }
+
+      function exportPDFWithLabel(label, filename) {
+        return new Promise((resolve) => {
+          const element = document.getElementById("invoice");
+          document.getElementById("docTypeLabel").textContent = label;
+          // prepare: convert interactive controls to text for PDF
+          prepareForExport();
+          element.classList.add("exporting");
+          // small timeout to allow DOM updates
+          setTimeout(() => {
+            html2pdf()
+              .from(element)
+              .set({
+                margin: 10,
+                filename: filename,
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+              })
+              .save()
+              .then(() => {
+                element.classList.remove("exporting");
+                // restore original interactive controls
+                restoreAfterExport();
+                resolve();
+              })
+              .catch((err) => {
+                element.classList.remove("exporting");
+                restoreAfterExport();
+                resolve();
+              });
+          }, 250);
+        });
+      }
+
+      async function exportPDFs() {
+        updateTotals();
+        if (!validateBeforeExport()) return;
+        const orig = "invoice_original.pdf";
+        const copy = "invoice_copy.pdf";
+        try {
+          await exportPDFWithLabel("ต้นฉบับ", orig);
+          await exportPDFWithLabel("สำเนา", copy);
+        } catch (e) {
+          alert("เกิดข้อผิดพลาดขณะส่งออก: " + e);
+        } finally {
+          document.getElementById("docTypeLabel").textContent = "";
+        }
+      }
+
+      // initialize sample items and payment method
+      (function init() {
+        addItem("อุปกรณ์ตัวอย่าง A", 2, 1000);
+        addItem("อุปกรณ์ตัวอย่าง B", 1, 3000);
+        setPaymentMethod();
+      })();
+    </script>
+  </body>
 </html>
