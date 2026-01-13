@@ -274,6 +274,49 @@
       .invoice-box.exporting .row-remove-btn {
         display: none !important;
       }
+
+      /* Payment section styling */
+      .payment-row {
+        margin-top: 14px;
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+      .payment-fields {
+        background: #f8fbff;
+        border: 1px solid #e3eefc;
+        padding: 12px;
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(16, 24, 40, 0.03);
+        width: 100%;
+      }
+      .payment-fields .row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .payment-fields label {
+        font-weight: 600;
+        color: #0b3b66;
+      }
+      .remark-box {
+        background: #fff7e6;
+        border-left: 4px solid #ff9800;
+        padding: 10px;
+        border-radius: 6px;
+        color: #6b4b00;
+        white-space: pre-line;
+      }
+      .remark-box.readonly { cursor: default; }
+      .remark-box.editable {
+        background: #f7f9fc;
+        border-left: 4px solid #1976d2;
+        color: #073e6b;
+      }
+      input[type="date"] { padding: 6px 8px; border-radius: 4px; }
+      textarea { min-height: 64px; max-height: 200px; resize: vertical; }
     </style>
   </head>
   <body>
@@ -293,6 +336,8 @@
           <h2>ร้าน เคเอ็นบี มอเตอร์</h2>
           ที่อยู่: 2/97-98 ม.1 ต.บางริ้น <br />
           อ.เมืองระนอง จ.ระนอง 85000<br />
+          เบอร์โทร : 081-256-3627<br />
+          เลขประจำตัวผู้เสียภาษี : 0215565007664<br />
         </div>
 
         <div class="logo">
@@ -301,7 +346,10 @@
       </div>
 
       <div class="title">
-        ใบกำกับภาษี
+        ใบเสร็จรับเงิน/ใบกำกับภาษี
+      </div>
+      <div class="title" style="font-size: 13px;">
+        RECEIPT / TAX INVOICE
         <div
           id="docTypeLabel"
           style="font-size: 14px; margin-top: 6px; color: #555"
@@ -411,14 +459,34 @@
           โอนบัญชีธนาคาร</label
         >
 
-        <div id="chequeFields" style="display: none; margin-top: 10px">
-          หมายเลขเช็ค: <input type="text" id="chequeNumber" /> &nbsp; ธนาคาร:
-          <input type="text" id="chequeBank" />
+        <div id="chequeFields" class="payment-fields" style="display: none; margin-top: 10px">
+          <div class="row">
+            <label>หมายเลขเช็ค:</label>
+            <input type="text" id="chequeNumber" />
+            <label>ธนาคาร:</label>
+            <input type="text" id="chequeBank" />
+            <label>วันที่รับเช็ค:</label>
+            <input type="date" id="chequeDate" />
+          </div>
+          <div style="margin-top:4px">
+            <div style="font-size:13px; color:#6b6b6b; margin-bottom:6px">หมายเหตุ</div>
+            <textarea id="chequeRemark" rows="3" class="remark-box readonly" style="width:100%; box-sizing:border-box" readonly tabindex="-1">ในกรณีรับเช็ค ใบเสร็จรับเงินฉบับนี้จะสมบูรณ์ ต่อเมื่อเช็คได้ผ่านการเรียกเก็บจากธนาคารแล้วเท่านั้น Payment will be vilid only when the cheque has benn honoured by bank.</textarea>
+          </div>
         </div>
 
-        <div id="transferFields" style="display: none; margin-top: 10px">
-          ธนาคาร: <input type="text" id="transferBank" /> &nbsp; เลขที่บัญชี:
-          <input type="text" id="transferAccount" />
+        <div id="transferFields" class="payment-fields" style="display: none; margin-top: 10px">
+          <div class="row">
+            <label>ธนาคาร:</label>
+            <input type="text" id="transferBank" />
+            <label>เลขที่บัญชี:</label>
+            <input type="text" id="transferAccount" />
+            <label>วันที่โอน:</label>
+            <input type="date" id="transferDate" />
+          </div>
+          <!-- <div style="margin-top:4px">
+            <div style="font-size:13px; color:#6b6b6b; margin-bottom:6px">หมายเหตุ (สามารถแก้ไขได้)</div>
+            <textarea id="transferRemark" rows="3" class="remark-box editable" style="width:100%; box-sizing:border-box"></textarea>
+          </div> -->
         </div>
       </div>
 
@@ -426,7 +494,7 @@
       <div class="footer">
         <div class="signature">
           ___________________________<br />
-          ผู้รับสินค้า
+          ผู้ซื้อสินค้า
         </div>
         <div class="signature">
           ___________________________<br />
@@ -504,10 +572,17 @@
         const method = document.querySelector(
           "input[name=paymentMethod]:checked"
         ).value;
-        document.getElementById("chequeFields").style.display =
-          method === "cheque" ? "block" : "none";
-        document.getElementById("transferFields").style.display =
-          method === "transfer" ? "block" : "none";
+        const chequeEl = document.getElementById("chequeFields");
+        const transferEl = document.getElementById("transferFields");
+        chequeEl.style.display = method === "cheque" ? "block" : "none";
+        transferEl.style.display = method === "transfer" ? "block" : "none";
+        if (method === "cheque") {
+          const chkRemark = document.getElementById("chequeRemark");
+          if (chkRemark && !chkRemark.value.trim()) {
+            chkRemark.value =
+              "ในกรณีรับเช็ค ใบเสร็จรับเงินฉบับนี้จะสมบูรณ์ ต่อเมื่อเช็คได้ผ่านการเรียกเก็บจากธนาคารแล้วเท่านั้น";
+          }
+        }
       }
 
       // Prepare export: replace interactive inputs/radios with plain text for accurate PDF rendering
@@ -516,7 +591,7 @@
         __exportBackups = [];
         const invoice = document.getElementById("invoice");
 
-        // Backup and replace payment container with summary text
+          // Backup and replace payment container with summary text
         const paymentContainer = document.getElementById("paymentContainer");
         if (paymentContainer) {
           __exportBackups.push({
@@ -535,15 +610,51 @@
           if (method && method.value === "cheque") {
             const num = document.getElementById("chequeNumber").value || "";
             const bank = document.getElementById("chequeBank").value || "";
+            let date = document.getElementById("chequeDate")
+              ? document.getElementById("chequeDate").value || ""
+              : "";
+            const remark = document.getElementById("chequeRemark")
+              ? document.getElementById("chequeRemark").value || ""
+              : "";
+            date = formatDateForExport(date);
             if (num || bank) text += " — " + num + (bank ? " / " + bank : "");
+            if (date) text += (text ? "\n" : " — ") + "วันที่รับเช็ค: " + date;
+            if (remark) text += "\n" + remark;
           }
           if (method && method.value === "transfer") {
             const bank = document.getElementById("transferBank").value || "";
             const acc = document.getElementById("transferAccount").value || "";
+            let date = document.getElementById("transferDate")
+              ? document.getElementById("transferDate").value || ""
+              : "";
+            const remark = document.getElementById("transferRemark")
+              ? document.getElementById("transferRemark").value || ""
+              : "";
+            date = formatDateForExport(date);
             if (bank || acc) text += " — " + bank + (acc ? " / " + acc : "");
+            if (date) text += (text ? "\n" : " — ") + "วันที่โอน: " + date;
+            if (remark) text += "\n" + remark;
           }
           paymentContainer.innerHTML =
-            '<div style="margin-top:6px;">' + text + "</div>";
+            '<div style="margin-top:6px; white-space:pre-line">' + text + "</div>";
+        }
+
+        // remove interactive/remove buttons from export view
+        invoice.querySelectorAll('.row-remove-btn, .no-print').forEach(el => el.remove());
+        // remove the last "จัดการ" column only from the items table (do not touch summary table)
+        const itemsTable = document.querySelector('#items')
+          ? document.querySelector('#items').closest('table')
+          : null;
+        if (itemsTable) {
+          const thead = itemsTable.querySelector('thead');
+          if (thead) {
+            const lastTh = thead.querySelector('th:last-child');
+            if (lastTh && /จัดการ/.test(lastTh.textContent)) lastTh.remove();
+          }
+          itemsTable.querySelectorAll('tr').forEach(tr => {
+            const lastTd = tr.querySelector('td:last-child');
+            if (lastTd) lastTd.remove();
+          });
         }
 
         // Replace all inputs (except buttons/no-print) with text nodes
@@ -576,12 +687,23 @@
             parent: inp.parentNode,
             next: inp.nextSibling,
             value: inp.value,
+            checked: inp.checked,
+            type: inp.type,
             span: span,
           });
           inp.parentNode.replaceChild(span, inp);
         });
 
         // Replace item row inputs as well (they are captured above)
+      }
+
+      // format yyyy-mm-dd -> dd/mm/yyyy for export readability
+      function formatDateForExport(dateStr) {
+        if (!dateStr) return "";
+        if (dateStr.indexOf("/") !== -1) return dateStr;
+        const parts = dateStr.split("-");
+        if (parts.length === 3) return parts[2] + "/" + parts[1] + "/" + parts[0];
+        return dateStr;
       }
 
       function restoreAfterExport() {
@@ -615,6 +737,12 @@
                     );
                 }
                 if (newInput && b.value !== undefined) newInput.value = b.value;
+                // restore checked state for radios/checkboxes
+                if (newInput && (b.type === "radio" || b.type === "checkbox")) {
+                  try {
+                    newInput.checked = !!b.checked;
+                  } catch (e) {}
+                }
               }
             } catch (e) {}
             // remove the replacement span if still present
@@ -703,11 +831,171 @@
       async function exportPDFs() {
         updateTotals();
         if (!validateBeforeExport()) return;
-        const orig = "invoice_original.pdf";
-        const copy = "invoice_copy.pdf";
+        // use document number as filename if available
+        const docNum = (document.getElementById("docNumber") || {}).value || "invoice";
+        const safeName = (docNum + "").replace(/[^a-zA-Z0-9-_\.ก-๙\s]/g, "_").trim();
+        const filename = safeName + ".pdf";
         try {
-          await exportPDFWithLabel("ต้นฉบับ", orig);
-          await exportPDFWithLabel("สำเนา", copy);
+          // create two printable clones (original + copy) with identical data
+          const origEl = document.getElementById("invoice");
+
+          function syncInputValues(source, target) {
+            const srcInputs = source.querySelectorAll("input, textarea, select");
+            const tgtInputs = target.querySelectorAll("input, textarea, select");
+            for (let i = 0; i < srcInputs.length; i++) {
+              const s = srcInputs[i];
+              const t = tgtInputs[i];
+              if (!t) continue;
+              try {
+                if (s.type === "checkbox" || s.type === "radio") {
+                  t.checked = s.checked;
+                } else {
+                  t.value = s.value;
+                }
+                if (s.tagName && s.tagName.toLowerCase() === "select") {
+                  t.value = s.value;
+                }
+              } catch (e) {}
+            }
+          }
+
+          function prepareCloneForExport(clone, label, emphasizeLabel) {
+            // set label inside clone
+            const lbl = clone.querySelector("#docTypeLabel");
+            if (lbl) {
+              lbl.textContent = label;
+              if (emphasizeLabel) {
+                lbl.style.fontSize = "18px";
+                lbl.style.fontWeight = "800";
+                lbl.style.color = "#fffff";
+              }
+            }
+
+            // remove interactive/remove buttons from clone so they won't be exported
+            clone.querySelectorAll('.row-remove-btn, .no-print').forEach(el => el.remove());
+            // remove the last "จัดการ" column in the clone's items table only
+            const cloneItems = clone.querySelector('#items')
+              ? clone.querySelector('#items').closest('table')
+              : null;
+            if (cloneItems) {
+              const thead2 = cloneItems.querySelector('thead');
+              if (thead2) {
+                const lastTh2 = thead2.querySelector('th:last-child');
+                if (lastTh2 && /จัดการ/.test(lastTh2.textContent)) lastTh2.remove();
+              }
+              cloneItems.querySelectorAll('tr').forEach(tr => {
+                const lastTd2 = tr.querySelector('td:last-child');
+                if (lastTd2) lastTd2.remove();
+              });
+            }
+
+            // ensure payment summary inside clone includes full details
+            const paymentContainer = clone.querySelector("#paymentContainer");
+            if (paymentContainer) {
+              const method = clone.querySelector(
+                "input[name=paymentMethod]:checked"
+              );
+              let text = "";
+              if (method) {
+                if (method.value === "cash") text = "เงินสด";
+                else if (method.value === "cheque") text = "เช็ค";
+                else if (method.value === "transfer") text = "โอนบัญชีธนาคาร";
+              }
+              if (method && method.value === "cheque") {
+                const num = clone.querySelector("#chequeNumber")
+                  ? clone.querySelector("#chequeNumber").value || ""
+                  : "";
+                const bank = clone.querySelector("#chequeBank")
+                  ? clone.querySelector("#chequeBank").value || ""
+                  : "";
+                let date = clone.querySelector("#chequeDate")
+                  ? clone.querySelector("#chequeDate").value || ""
+                  : "";
+                const remark = clone.querySelector("#chequeRemark")
+                  ? clone.querySelector("#chequeRemark").value || ""
+                  : "";
+                date = formatDateForExport(date);
+                if (num || bank) text += " — " + num + (bank ? " / " + bank : "");
+                if (date) text += (text ? "\n" : " — ") + "วันที่รับเช็ค: " + date;
+                if (remark) text += "\n" + remark;
+              }
+              if (method && method.value === "transfer") {
+                const bank = clone.querySelector("#transferBank")
+                  ? clone.querySelector("#transferBank").value || ""
+                  : "";
+                const acc = clone.querySelector("#transferAccount")
+                  ? clone.querySelector("#transferAccount").value || ""
+                  : "";
+                let date = clone.querySelector("#transferDate")
+                  ? clone.querySelector("#transferDate").value || ""
+                  : "";
+                const remark = clone.querySelector("#transferRemark")
+                  ? clone.querySelector("#transferRemark").value || ""
+                  : "";
+                date = formatDateForExport(date);
+                if (bank || acc) text += " — " + bank + (acc ? " / " + acc : "");
+                if (date) text += (text ? "\n" : " — ") + "วันที่โอน: " + date;
+                if (remark) text += "\n" + remark;
+              }
+              paymentContainer.innerHTML =
+                '<div style="margin-top:6px; white-space:pre-line">' + text + "</div>";
+            }
+
+            // replace inputs in clone with spans (static text)
+            const inputs = clone.querySelectorAll("input, textarea, select");
+            inputs.forEach((inp) => {
+              if (inp.classList && inp.classList.contains("no-print")) return;
+              const span = document.createElement("span");
+              let value = "";
+              if (inp.type === "checkbox" || inp.type === "radio") {
+                if (inp.checked) {
+                  const lbl = clone.querySelector('label[for="' + inp.id + '"]');
+                  value = inp.value || (lbl ? lbl.textContent : "เลือก");
+                } else return;
+              } else {
+                value = inp.value || "";
+              }
+              span.textContent = value;
+              span.style.whiteSpace = "pre-line";
+              inp.parentNode.replaceChild(span, inp);
+            });
+          }
+
+          // build wrapper with two clones
+          const wrapper = document.createElement("div");
+          // set wrapper width to printable A4 width minus 2*10mm margins = 190mm
+          wrapper.style.width = "190mm";
+          wrapper.style.margin = "0 auto";
+          wrapper.style.boxSizing = "border-box";
+
+          const cloneA = origEl.cloneNode(true);
+          const cloneB = origEl.cloneNode(true);
+
+          // sync live values from original into clones
+          syncInputValues(origEl, cloneA);
+          syncInputValues(origEl, cloneB);
+
+          prepareCloneForExport(cloneA, "", false);
+          // force a page break after the first clone
+          cloneA.style.pageBreakAfter = "always";
+          cloneA.style.breakAfter = "page";
+
+          prepareCloneForExport(cloneB, "สำเนา", true);
+
+          wrapper.appendChild(cloneA);
+          wrapper.appendChild(cloneB);
+
+          document.body.appendChild(wrapper);
+          // export the wrapper as a single PDF (2 pages)
+          const opt = {
+            margin: 10,
+            filename: filename,
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+          };
+          await html2pdf().from(wrapper).set(opt).save();
+          // cleanup
+          wrapper.remove();
         } catch (e) {
           alert("เกิดข้อผิดพลาดขณะส่งออก: " + e);
         } finally {
