@@ -41,17 +41,27 @@
 
       .header {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         margin-bottom: 20px;
+        position: relative;
       }
 
       .company-info {
         line-height: 1.6;
+        text-align:left;
+        max-width: calc(100% - 140px);
       }
 
       .company-info h2 {
         margin: 0;
+      }
+
+      .logo {
+        position:absolute;
+        left: 1mm;
+        top: 50%;
+        transform: translateY(-50%);
       }
 
       .logo img {
@@ -204,9 +214,12 @@
         width: 90px;
         text-align: right;
       }
-      input.item-desc {
+      /* allow multi-line descriptions */
+      .item-desc {
         width: 100%;
         box-sizing: border-box;
+        resize: vertical;
+        min-height: 44px;
       }
       ::placeholder {
         color: #9aa6b2;
@@ -333,7 +346,8 @@
       <!-- Header -->
       <div class="header">
         <div class="company-info">
-          <h2>ร้าน เคเอ็นบี มอเตอร์</h2>
+          <h2>บริษัท เคเอ็นบี อินเตอร์เนชั่นแนล จำกัด</h2>
+          ร้าน เคเอ็นบี มอเตอร์ (สาขา 2) <br />
           ที่อยู่: 2/97-98 ม.1 ต.บางริ้น <br />
           อ.เมืองระนอง จ.ระนอง 85000<br />
           เบอร์โทร : 081-256-3627<br />
@@ -516,7 +530,7 @@
         const row = document.createElement("tr");
         row.innerHTML = `
       <td class="item-index"></td>
-      <td><input class="item-desc" type="text" value="${desc}"></td>
+      <td><textarea class="item-desc">${desc}</textarea></td>
       <td><input class="item-qty" type="number" min="0" value="${qty}"></td>
       <td><input class="item-price" type="number" min="0" step="0.01" value="${price}"></td>
       <td class="item-amount">0.00</td>
