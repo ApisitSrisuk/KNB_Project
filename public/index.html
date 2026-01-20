@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th">
   <head>
     <meta charset="UTF-8" />
@@ -49,7 +49,7 @@
 
       .company-info {
         line-height: 1.6;
-        text-align:left;
+        text-align: left;
         max-width: calc(100% - 140px);
       }
 
@@ -58,7 +58,7 @@
       }
 
       .logo {
-        position:absolute;
+        position: absolute;
         left: 1mm;
         top: 50%;
         transform: translateY(-50%);
@@ -195,7 +195,9 @@
         font-size: 13px;
         color: #112233;
         box-shadow: inset 0 1px 2px rgba(16, 24, 40, 0.03);
-        transition: box-shadow 0.12s ease, border-color 0.12s ease,
+        transition:
+          box-shadow 0.12s ease,
+          border-color 0.12s ease,
           background 0.12s;
       }
 
@@ -322,14 +324,23 @@
         color: #6b4b00;
         white-space: pre-line;
       }
-      .remark-box.readonly { cursor: default; }
+      .remark-box.readonly {
+        cursor: default;
+      }
       .remark-box.editable {
         background: #f7f9fc;
         border-left: 4px solid #1976d2;
         color: #073e6b;
       }
-      input[type="date"] { padding: 6px 8px; border-radius: 4px; }
-      textarea { min-height: 64px; max-height: 200px; resize: vertical; }
+      input[type="date"] {
+        padding: 6px 8px;
+        border-radius: 4px;
+      }
+      textarea {
+        min-height: 64px;
+        max-height: 200px;
+        resize: vertical;
+      }
     </style>
   </head>
   <body>
@@ -359,10 +370,8 @@
         </div>
       </div>
 
-      <div class="title">
-        ใบเสร็จรับเงิน/ใบกำกับภาษี
-      </div>
-      <div class="title" style="font-size: 13px;">
+      <div class="title">ใบเสร็จรับเงิน/ใบกำกับภาษี</div>
+      <div class="title" style="font-size: 13px">
         RECEIPT / TAX INVOICE
         <div
           id="docTypeLabel"
@@ -473,7 +482,11 @@
           โอนบัญชีธนาคาร</label
         >
 
-        <div id="chequeFields" class="payment-fields" style="display: none; margin-top: 10px">
+        <div
+          id="chequeFields"
+          class="payment-fields"
+          style="display: none; margin-top: 10px"
+        >
           <div class="row">
             <label>หมายเลขเช็ค:</label>
             <input type="text" id="chequeNumber" />
@@ -482,13 +495,28 @@
             <label>วันที่รับเช็ค:</label>
             <input type="date" id="chequeDate" />
           </div>
-          <div style="margin-top:4px">
-            <div style="font-size:13px; color:#6b6b6b; margin-bottom:6px">หมายเหตุ</div>
-            <textarea id="chequeRemark" rows="3" class="remark-box readonly" style="width:100%; box-sizing:border-box" readonly tabindex="-1">ในกรณีรับเช็ค ใบเสร็จรับเงินฉบับนี้จะสมบูรณ์ ต่อเมื่อเช็คได้ผ่านการเรียกเก็บจากธนาคารแล้วเท่านั้น Payment will be vilid only when the cheque has benn honoured by bank.</textarea>
+          <div style="margin-top: 4px">
+            <div style="font-size: 13px; color: #6b6b6b; margin-bottom: 6px">
+              หมายเหตุ
+            </div>
+            <textarea
+              id="chequeRemark"
+              rows="3"
+              class="remark-box readonly"
+              style="width: 100%; box-sizing: border-box"
+              readonly
+              tabindex="-1"
+            >
+ในกรณีรับเช็ค ใบเสร็จรับเงินฉบับนี้จะสมบูรณ์ ต่อเมื่อเช็คได้ผ่านการเรียกเก็บจากธนาคารแล้วเท่านั้น Payment will be vilid only when the cheque has benn honoured by bank.</textarea
+            >
           </div>
         </div>
 
-        <div id="transferFields" class="payment-fields" style="display: none; margin-top: 10px">
+        <div
+          id="transferFields"
+          class="payment-fields"
+          style="display: none; margin-top: 10px"
+        >
           <div class="row">
             <label>ธนาคาร:</label>
             <input type="text" id="transferBank" />
@@ -518,6 +546,15 @@
     </div>
 
     <script>
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, "0");
+      const month = String(today.getMonth() + 1).padStart(2, "0");
+      const year = today.getFullYear(); // ใช้เป็นปี ค.ศ. (2026)
+
+      const dateStr = `${year}${month}${day}`;
+      const fullDocNumber = `INV-${dateStr}-001`;
+      document.getElementById("docDate").value = `${day}/${month}/${year}/`;
+      document.getElementById("docNumber").value = fullDocNumber;
       function formatNumber(num) {
         return Number(num).toLocaleString("en-US", {
           minimumFractionDigits: 2,
@@ -547,7 +584,7 @@
         const price = row.querySelector(".item-price");
         const desc = row.querySelector(".item-desc");
         [qty, price, desc].forEach((el) =>
-          el.addEventListener("input", updateTotals)
+          el.addEventListener("input", updateTotals),
         );
       }
 
@@ -584,7 +621,7 @@
 
       function setPaymentMethod() {
         const method = document.querySelector(
-          "input[name=paymentMethod]:checked"
+          "input[name=paymentMethod]:checked",
         ).value;
         const chequeEl = document.getElementById("chequeFields");
         const transferEl = document.getElementById("transferFields");
@@ -605,7 +642,7 @@
         __exportBackups = [];
         const invoice = document.getElementById("invoice");
 
-          // Backup and replace payment container with summary text
+        // Backup and replace payment container with summary text
         const paymentContainer = document.getElementById("paymentContainer");
         if (paymentContainer) {
           __exportBackups.push({
@@ -613,7 +650,7 @@
             html: paymentContainer.innerHTML,
           });
           const method = document.querySelector(
-            "input[name=paymentMethod]:checked"
+            "input[name=paymentMethod]:checked",
           );
           let text = "";
           if (method) {
@@ -650,23 +687,27 @@
             if (remark) text += "\n" + remark;
           }
           paymentContainer.innerHTML =
-            '<div style="margin-top:6px; white-space:pre-line">' + text + "</div>";
+            '<div style="margin-top:6px; white-space:pre-line">' +
+            text +
+            "</div>";
         }
 
         // remove interactive/remove buttons from export view
-        invoice.querySelectorAll('.row-remove-btn, .no-print').forEach(el => el.remove());
+        invoice
+          .querySelectorAll(".row-remove-btn, .no-print")
+          .forEach((el) => el.remove());
         // remove the last "จัดการ" column only from the items table (do not touch summary table)
-        const itemsTable = document.querySelector('#items')
-          ? document.querySelector('#items').closest('table')
+        const itemsTable = document.querySelector("#items")
+          ? document.querySelector("#items").closest("table")
           : null;
         if (itemsTable) {
-          const thead = itemsTable.querySelector('thead');
+          const thead = itemsTable.querySelector("thead");
           if (thead) {
-            const lastTh = thead.querySelector('th:last-child');
+            const lastTh = thead.querySelector("th:last-child");
             if (lastTh && /จัดการ/.test(lastTh.textContent)) lastTh.remove();
           }
-          itemsTable.querySelectorAll('tr').forEach(tr => {
-            const lastTd = tr.querySelector('td:last-child');
+          itemsTable.querySelectorAll("tr").forEach((tr) => {
+            const lastTd = tr.querySelector("td:last-child");
             if (lastTd) lastTd.remove();
           });
         }
@@ -716,7 +757,8 @@
         if (!dateStr) return "";
         if (dateStr.indexOf("/") !== -1) return dateStr;
         const parts = dateStr.split("-");
-        if (parts.length === 3) return parts[2] + "/" + parts[1] + "/" + parts[0];
+        if (parts.length === 3)
+          return parts[2] + "/" + parts[1] + "/" + parts[0];
         return dateStr;
       }
 
@@ -747,7 +789,7 @@
                     newInput = restored;
                   else if (restored.querySelector)
                     newInput = restored.querySelector(
-                      "input, textarea, select"
+                      "input, textarea, select",
                     );
                 }
                 if (newInput && b.value !== undefined) newInput.value = b.value;
@@ -761,7 +803,7 @@
             } catch (e) {}
             // remove the replacement span if still present
             const s = parent.querySelector(
-              '[data-export-id="' + b.exportId + '"]'
+              '[data-export-id="' + b.exportId + '"]',
             );
             if (s) s.remove();
           } else if (b.node) {
@@ -783,7 +825,7 @@
 
       function validateBeforeExport() {
         const method = document.querySelector(
-          "input[name=paymentMethod]:checked"
+          "input[name=paymentMethod]:checked",
         ).value;
         if (method === "cheque") {
           const num = document.getElementById("chequeNumber").value.trim();
@@ -846,16 +888,23 @@
         updateTotals();
         if (!validateBeforeExport()) return;
         // use document number as filename if available
-        const docNum = (document.getElementById("docNumber") || {}).value || "invoice";
-        const safeName = (docNum + "").replace(/[^a-zA-Z0-9-_\.ก-๙\s]/g, "_").trim();
+        const docNum = fullDocNumber;
+
+        const safeName = (docNum + "")
+          .replace(/[^a-zA-Z0-9-_\.ก-๙\s]/g, "_")
+          .trim();
         const filename = safeName + ".pdf";
         try {
           // create two printable clones (original + copy) with identical data
           const origEl = document.getElementById("invoice");
 
           function syncInputValues(source, target) {
-            const srcInputs = source.querySelectorAll("input, textarea, select");
-            const tgtInputs = target.querySelectorAll("input, textarea, select");
+            const srcInputs = source.querySelectorAll(
+              "input, textarea, select",
+            );
+            const tgtInputs = target.querySelectorAll(
+              "input, textarea, select",
+            );
             for (let i = 0; i < srcInputs.length; i++) {
               const s = srcInputs[i];
               const t = tgtInputs[i];
@@ -886,19 +935,22 @@
             }
 
             // remove interactive/remove buttons from clone so they won't be exported
-            clone.querySelectorAll('.row-remove-btn, .no-print').forEach(el => el.remove());
+            clone
+              .querySelectorAll(".row-remove-btn, .no-print")
+              .forEach((el) => el.remove());
             // remove the last "จัดการ" column in the clone's items table only
-            const cloneItems = clone.querySelector('#items')
-              ? clone.querySelector('#items').closest('table')
+            const cloneItems = clone.querySelector("#items")
+              ? clone.querySelector("#items").closest("table")
               : null;
             if (cloneItems) {
-              const thead2 = cloneItems.querySelector('thead');
+              const thead2 = cloneItems.querySelector("thead");
               if (thead2) {
-                const lastTh2 = thead2.querySelector('th:last-child');
-                if (lastTh2 && /จัดการ/.test(lastTh2.textContent)) lastTh2.remove();
+                const lastTh2 = thead2.querySelector("th:last-child");
+                if (lastTh2 && /จัดการ/.test(lastTh2.textContent))
+                  lastTh2.remove();
               }
-              cloneItems.querySelectorAll('tr').forEach(tr => {
-                const lastTd2 = tr.querySelector('td:last-child');
+              cloneItems.querySelectorAll("tr").forEach((tr) => {
+                const lastTd2 = tr.querySelector("td:last-child");
                 if (lastTd2) lastTd2.remove();
               });
             }
@@ -907,7 +959,7 @@
             const paymentContainer = clone.querySelector("#paymentContainer");
             if (paymentContainer) {
               const method = clone.querySelector(
-                "input[name=paymentMethod]:checked"
+                "input[name=paymentMethod]:checked",
               );
               let text = "";
               if (method) {
@@ -929,8 +981,10 @@
                   ? clone.querySelector("#chequeRemark").value || ""
                   : "";
                 date = formatDateForExport(date);
-                if (num || bank) text += " — " + num + (bank ? " / " + bank : "");
-                if (date) text += (text ? "\n" : " — ") + "วันที่รับเช็ค: " + date;
+                if (num || bank)
+                  text += " — " + num + (bank ? " / " + bank : "");
+                if (date)
+                  text += (text ? "\n" : " — ") + "วันที่รับเช็ค: " + date;
                 if (remark) text += "\n" + remark;
               }
               if (method && method.value === "transfer") {
@@ -947,12 +1001,15 @@
                   ? clone.querySelector("#transferRemark").value || ""
                   : "";
                 date = formatDateForExport(date);
-                if (bank || acc) text += " — " + bank + (acc ? " / " + acc : "");
+                if (bank || acc)
+                  text += " — " + bank + (acc ? " / " + acc : "");
                 if (date) text += (text ? "\n" : " — ") + "วันที่โอน: " + date;
                 if (remark) text += "\n" + remark;
               }
               paymentContainer.innerHTML =
-                '<div style="margin-top:6px; white-space:pre-line">' + text + "</div>";
+                '<div style="margin-top:6px; white-space:pre-line">' +
+                text +
+                "</div>";
             }
 
             // replace inputs in clone with spans (static text)
@@ -963,7 +1020,9 @@
               let value = "";
               if (inp.type === "checkbox" || inp.type === "radio") {
                 if (inp.checked) {
-                  const lbl = clone.querySelector('label[for="' + inp.id + '"]');
+                  const lbl = clone.querySelector(
+                    'label[for="' + inp.id + '"]',
+                  );
                   value = inp.value || (lbl ? lbl.textContent : "เลือก");
                 } else return;
               } else {
@@ -982,22 +1041,32 @@
           wrapper.style.margin = "0 auto";
           wrapper.style.boxSizing = "border-box";
 
-          const cloneA = origEl.cloneNode(true);
-          const cloneB = origEl.cloneNode(true);
+          const cloneA = origEl.cloneNode(true); // ต้นฉบับ
+          const cloneB = origEl.cloneNode(true); // สำเนาใบที่ 1
+          const cloneC = origEl.cloneNode(true); // สำเนาใบที่ 2
 
-          // sync live values from original into clones
+          // sync live values จากต้นฉบับเข้าสู่ทุก clones
           syncInputValues(origEl, cloneA);
           syncInputValues(origEl, cloneB);
+          syncInputValues(origEl, cloneC);
 
-          prepareCloneForExport(cloneA, "", false);
-          // force a page break after the first clone
+          // เตรียมใบที่ 1: ต้นฉบับ
+          prepareCloneForExport(cloneA, "ต้นฉบับ", false);
           cloneA.style.pageBreakAfter = "always";
           cloneA.style.breakAfter = "page";
 
-          prepareCloneForExport(cloneB, "สำเนา", true);
+          // เตรียมใบที่ 2: สำเนาใบที่ 1
+          prepareCloneForExport(cloneB, "สำเนา ", true);
+          cloneB.style.pageBreakAfter = "always";
+          cloneB.style.breakAfter = "page";
 
+          // เตรียมใบที่ 3: สำเนาใบที่ 2
+          prepareCloneForExport(cloneC, "สำเนา ", true);
+
+          // ใส่ทั้งหมดลงใน wrapper
           wrapper.appendChild(cloneA);
           wrapper.appendChild(cloneB);
+          wrapper.appendChild(cloneC);
 
           document.body.appendChild(wrapper);
           // export the wrapper as a single PDF (2 pages)
