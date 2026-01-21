@@ -67,7 +67,7 @@
       }
 
       .logo img {
-        max-width: 120px;
+        max-width: 200px;
       }
 
       .title {
@@ -494,15 +494,15 @@
       <!-- Summary -->
       <table class="summary">
         <tr>
-          <td>รวมเป็นเงิน</td>
+          <td><strong>รวมเป็นเงิน</strong></td>
           <td id="subTotal">0.00</td>
         </tr>
         <tr>
-          <td>ภาษีมูลค่าเพิ่ม 7%</td>
+          <td><strong>ภาษีมูลค่าเพิ่ม 7%</strong></td>
           <td id="vatAmount">0.00</td>
         </tr>
         <tr>
-          <td><strong>ยอดสุทธิ</strong></td>
+          <td><strong>ราคาสินค้าและบริการ</strong></td>
           <td id="grandTotal"><strong>0.00</strong></td>
         </tr>
       </table>
@@ -669,7 +669,7 @@
           subtotal += amt;
         });
         const vat = subtotal * 0.07;
-        const total = subtotal + vat;
+        const total = subtotal - vat;
         document.getElementById("subTotal").textContent =
           formatNumber(subtotal);
         document.getElementById("vatAmount").textContent = formatNumber(vat);

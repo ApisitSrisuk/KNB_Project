@@ -37,6 +37,7 @@
 
       .header {
         display: flex;
+        flex-direction: row;
         justify-content: space-between;
         align-items: flex-start;
         margin-bottom: 20px;
@@ -45,6 +46,7 @@
       .company-info {
         line-height: 1.6;
         text-align: left;
+        flex: 1;
       }
 
       .company-info h2 {
@@ -52,8 +54,12 @@
         color: #0b3b66;
       }
 
+      .logo {
+        margin-bottom: 15px;
+      }
+
       .logo img {
-        max-width: 120px;
+        max-width: 200px;
       }
 
       .title {
@@ -383,6 +389,10 @@
 
     <div id="invoice" class="invoice-box">
       <div class="header">
+        <div class="logo">
+          <!-- <div style="width: 100px; height: 100px; background: #eee; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">LOGO</div>-->
+          <img src="images/logo.png" alt="Company Logo" />
+        </div>
         <div class="company-info">
           <h2>บริษัท เคเอ็นบี อินเตอร์เนชั่นแนล จำกัด</h2>
           <p>
@@ -391,10 +401,6 @@
             เบอร์โทร : 081-256-3627 <br />
             เลขประจำตัวผู้เสียภาษี : 0215565007664
           </p>
-        </div>
-        <div class="logo">
-          <!-- <div style="width: 100px; height: 100px; background: #eee; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc;">LOGO</div>-->
-          <img src="images/logo.png" alt="Company Logo" />
         </div>
       </div>
 
@@ -449,7 +455,7 @@
             <strong>ประเภทรถ:</strong>
             <select id="carsType" name="carsType" class="dropdownS">
               <option value="new">รถใหม่</option>
-              <option value="old">รถเก่า</option>
+              <option value="old">รถมือสอง</option>
             </select>
           </div>
         </div>
