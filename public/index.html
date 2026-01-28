@@ -388,7 +388,7 @@
         }
       }
     </style>
-    <link rel="icon" type="image/x-icon" href="/logo.png">
+    <link rel="icon" type="image/x-icon" href="/logo.png" />
   </head>
   <body>
     <!-- Navbar -->
@@ -403,7 +403,7 @@
         </ul>
       </div>
     </nav>
-    <br>
+    <br />
     <div style="text-align: center; margin-bottom: 10px">
       <button class="btn no-print" onclick="exportPDFs()">ดาวน์โหลด PDF</button>
       <button class="btn secondary no-print" onclick="addItem()">
@@ -610,7 +610,7 @@
 
       const dateStr = `${year}${month}${day}`;
       const fullDocNumber = `INV-${dateStr}-001`;
-      document.getElementById("docDate").value = `${day}/${month}/${year}/`;
+      document.getElementById("docDate").value = `${day}/${month}/${year}`;
       document.getElementById("docNumber").value = fullDocNumber;
       function formatNumber(num) {
         return Number(num).toLocaleString("en-US", {
@@ -812,10 +812,11 @@
       // format yyyy-mm-dd -> dd/mm/yyyy for export readability
       function formatDateForExport(dateStr) {
         if (!dateStr) return "";
-        if (dateStr.indexOf("/") !== -1) return dateStr;
+        // ถ้ามาเป็น yyyy-mm-dd (รูปแบบมาตรฐานของ input type="date")
         const parts = dateStr.split("-");
-        if (parts.length === 3)
-          return parts[2] + "/" + parts[1] + "/" + parts[0];
+        if (parts.length === 3 && parts[0].length === 4) {
+          return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
         return dateStr;
       }
 
