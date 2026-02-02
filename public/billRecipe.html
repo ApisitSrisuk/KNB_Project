@@ -581,10 +581,6 @@
 
       function exportPDF() {
         const element = document.getElementById("invoice");
-        // const method = document.querySelector(
-        //   'input[name="payMethod"]:checked',
-        // ).value;
-
         const opt = {
           margin: 10,
           filename: `Invoice-${document.getElementById("docNumber").value}.pdf`,
@@ -599,45 +595,43 @@
         const pdfContainer = document.createElement("div");
         pdfContainer.id = "pdf-export-container";
 
-        // สร้าง 2 สำเนา
         for (let copy = 0; copy < 2; copy++) {
-          // Clone element
           const clonedElement = element.cloneNode(true);
           clonedElement.classList.add("export-mode");
 
-          // เพิ่มป้ายกำกับ
+          // จัดการค่าป้ายกำกับ
           const copyLabel = document.createElement("div");
-          copyLabel.style.cssText =
-            "text-align: right; padding: 5px; font-size: 12px; color: #999; margin-bottom: 5px;";
-          copyLabel.innerText = copy === 0 ? "" : "สำเนา (Copy)";
+          copyLabel.style.cssText = "text-align: right; padding: 5px; font-size: 12px; color: #999; margin-bottom: 5px;";
+          copyLabel.innerText = copy === 0 ? "ต้นฉบับ (Original)" : "สำเนา (Copy)";
 
           const wrapper = document.createElement("div");
-          wrapper.style.cssText =
-            "page-break-after: always; padding-bottom: 20px;";
+          wrapper.style.cssText = "page-break-after: always; padding-bottom: 20px;";
           wrapper.appendChild(copyLabel);
           wrapper.appendChild(clonedElement);
           pdfContainer.appendChild(wrapper);
+
+          // --- ส่วนที่แก้ไข: ดึงค่าจาก Form จริงไปใส่ในชุดที่ Clone ---
+          const originalInputs = element.querySelectorAll("input, textarea, select");
+          const clonedInputs = clonedElement.querySelectorAll("input, textarea, select");
+
+          originalInputs.forEach((orig, index) => {
+            const cloned = clonedInputs[index];
+            if (orig.tagName === "SELECT") {
+              // ดึงข้อความที่เลือก (เช่น "รถมือสอง") แทนที่จะเอาแค่ value
+              const selectedText = orig.options[orig.selectedIndex].text;
+              const span = document.createElement("span");
+              span.innerText = selectedText;
+              cloned.parentNode.replaceChild(span, cloned);
+            } else if (orig.type !== "radio") {
+              // สำหรับ input text และ textarea
+              const span = document.createElement("span");
+              span.innerText = orig.value;
+              cloned.parentNode.replaceChild(span, cloned);
+            }
+          });
         }
 
         document.body.appendChild(pdfContainer);
-
-        const inputs = pdfContainer.querySelectorAll("input, textarea");
-        const tempSpans = [];
-        inputs.forEach((input) => {
-          if (input.type === "radio") return;
-
-          // ตรวจสอบว่า input อยู่ใน payment-details ที่ไม่ได้เลือกหรือไม่
-          const parentDetails = input.closest(".payment-details");
-          if (parentDetails && !parentDetails.classList.contains("active"))
-            return;
-
-          const span = document.createElement("span");
-          span.innerText = input.value;
-          span.className = "temp-text";
-          input.style.display = "none";
-          input.parentElement.appendChild(span);
-          tempSpans.push({ input, span });
-        });
 
         html2pdf()
           .set(opt)
@@ -646,10 +640,6 @@
           .then(() => {
             element.classList.remove("export-mode");
             pdfContainer.remove();
-            tempSpans.forEach(({ input, span }) => {
-              input.style.display = "";
-              span.remove();
-            });
           });
       }
 
